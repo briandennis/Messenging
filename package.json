@@ -1,0 +1,27 @@
+{
+  "name": "messenging",
+  "version": "1.0.0",
+  "description": "Messaging package",
+  "main": "electron.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briandennis/Messenging.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/briandennis/Messenging/issues"
+  },
+  "homepage": "https://github.com/briandennis/Messenging#readme",
+  "dependencies": {
+    "express": "^4.13.4",
+    "jsonwebtoken": "^5.7.0",
+    "socket.io": "^1.4.5"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^0.37.5"
+  }
+}
