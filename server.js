@@ -11,10 +11,14 @@ app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/public/`);
 });
 
+const messages = [];
+
 // emit hello world event
 io.on('connection', (socket) => {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', (data) => {
-    console.log(data);
-  });
+  socket.emit('messages', ['Hello!', 'Hey', 'What ya up to?']);
+});
+
+io.on('sentMessage', (socket) => {
+  messages.push(socket.data);
+  socket.emit('messageAdded', messages[messages.length - 1]);
 });

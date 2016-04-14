@@ -4,7 +4,8 @@
   "description": "Messaging package",
   "main": "electron.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dev": "concurrently \"node server.js\" \"electron .\""
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "socket.io": "^1.4.5"
   },
   "devDependencies": {
+    "concurrently": "^2.0.0",
     "electron-prebuilt": "^0.37.5"
   }
 }
