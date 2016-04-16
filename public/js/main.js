@@ -10,6 +10,14 @@ socket.on('news', (data) => {
   socket.emit('loaded', { my: 'data' });
 });
 
+socket.on('messages', (data) => {
+  let messages = data.messages;
+  messages.sort( (a,b) => {
+    return a - b;
+  });
+  renderMessages(messages);
+});
+
 
 function sendMessage(threadId, senderId, content) {
   socket.emit('newMessage', {

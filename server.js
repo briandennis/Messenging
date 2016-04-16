@@ -44,20 +44,10 @@ const threadSchema = mongoose.Schema({
 
 const Thread = mongoose.model('Thread', threadSchema);
 
-Message.find( (err, messages) => {
-  if(err){
-    console.log('Error fetching messages!');
-    return;
-  }
-  console.log(`Fetched Messages! Here they are: ${messages.toString()}`);
-});
-
 ////////// Socket Code //////////
 
 // emit hello world event
 io.on('connection', (socket) => {
-
-  socket.emit
 
   // handle new sent message
   socket.on('newMessage', (data) => {
@@ -69,16 +59,22 @@ io.on('connection', (socket) => {
       time: new Date().getTime()
     });
 
-    // store new message in db
-    newMessage.save((er, newMessage) => {
-      if (er){
-        console.log(`Error: ${er}`);
-        return false;
+    // get thread and add message to it
+    Thread.findOne({threadId: 'testThread'}, (err, thread) => {
+      if (err){
+        console.log('Thread error!');
+        return;
       }
-      console.log( `Saved new message: ${newMessage.content}`);
+      console.log('Thread found: ' + thread.toString());
+
+      // add message to thread
+      thread.messages.push(newMessage);
+
+      // save thread
+      thread.save( (err, thread) => {
+        console.log('Got to save thread!');
+        socket.emit('messages', {messages: thread.messages});
+      });
     });
-
-    // updat
-
   });
 });
