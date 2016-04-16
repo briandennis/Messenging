@@ -1,0 +1,26 @@
+body{
+  width: 100vw;
+  height: 100vh;
+}
+
+h1{
+  text-align: center;
+  font-family: Helvetica;
+}
+#titleContainer{
+  width: 100%;
+  height: 10%:
+  border: solid 2px green;
+}
+#messageContainer{
+  width: 100%;
+  height: 90%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;;
+}
+#messages{
+  width: 100%;
+  height: 400px;
+}

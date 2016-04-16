@@ -2,10 +2,21 @@
 <html>
   <head>
     <title>Messaging Application</title>
+    <link rel='stylesheet' href='index.css' />
   </head>
   <body>
-    <h1>Messaging Application</h1>
+    <div id='titleContainer'>
+      <h1>Messaging Application</h1>
+    </div>
+    <div id='messageContainer'>
+      <div id='inputWrapper'>
+        <div id='messages'>
+        </div>
+        <input id='messageBox' type='text' />
+        <button id='send'>Send</button>
+      </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
-    <script src='main.js'></script>
+    <script src='js/main.js'></script>
   </body>
 </html>
