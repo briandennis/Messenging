@@ -18,6 +18,16 @@ socket.on('messages', (data) => {
   renderMessages(messages);
 });
 
+function renderMessages(messages){
+  var container = document.getElementById('messages');
+  container.innerHTML = '';
+  messages.forEach( (message) => {
+    var p = document.createElement('p');
+    p.innerHTML = message.senderId + ': ' + message.content;
+    container.appendChild(p);
+  });
+}
+
 
 function sendMessage(threadId, senderId, content) {
   socket.emit('newMessage', {
