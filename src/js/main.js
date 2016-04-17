@@ -114,9 +114,16 @@ function sendMessageHelper () {
   sendMessage(currentThread, user, message);
 }
 
-document.getElementById('send').addEventListener('click',sendMessageHelper);
+function documentInit(){
 
-var threadElements = document.getElementsByClassName('thread');
-for(var i = 0; i < threadElements.length; i++){
-  threadElements[i].addEventListener('click', changeThread);
+  // bind send message button
+  document.getElementById('send').addEventListener('click',sendMessageHelper);
+
+  // bind thread buttons
+  var threadElements = document.getElementsByClassName('thread');
+  for(var i = 0; i < threadElements.length; i++) {
+    threadElements[i].addEventListener('click', changeThread);
+  }
 }
+
+documentInit();
