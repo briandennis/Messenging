@@ -77,6 +77,7 @@ function renderMessages(messages) {
 
     var p = document.createElement('p');
     p.innerHTML = currUser.firstName + ' ' + currUser.lastName + ': ' + message.content;
+    p.className = 'message';
     container.appendChild(p);
   });
 
