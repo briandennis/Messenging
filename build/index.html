@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Messaging Application</title>
+    <link rel='stylesheet' href='index.css' />
+  </head>
+  <body>
+    <div id='titleContainer'>
+      <h1>Messaging Application</h1>
+    </div>
+    <div id='threads'>
+        <button class='thread' id='testThread' onclick="changeThread">Group</button>
+        <button class='thread' id='testUser1' onclick="changeThread">Jake</button>
+        <button class='thread' id='testUser2' onclick="changeThread">Elon</button>
+    </div>
+    <div id='app'>
+
+    </div>
+    <div id='messageContainer'>
+      <div id='inputWrapper'>
+        <div id='messages'>
+        </div>
+        <input id='messageBox' type='text' />
+        <button id='send'>Send</button>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script src='js/session.js'></script>
+    <script src='js/components/messages.js'></script>
+    <script src='js/main.js'></script>
+  </body>
+</html>
