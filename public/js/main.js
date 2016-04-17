@@ -1,13 +1,42 @@
 const socket = io('http://localhost:3000');
 
+// create dummy session info
 const thread = 'testThread';
 const user = 'testUser';
+const others = ['testUser1', 'testUser2', 'testUser3', 'testUser4'];
+var currentRoom = thread;
+var threads = [];
 
-socket.on('news', (data) => {
-  const el = document.createElement('p');
-  el.innerHTML = data.hello;
-  document.body.appendChild(el);
-  socket.emit('loaded', { my: 'data' });
+socket.on('getRooms', () => {
+
+  // calculate rooms
+  var rooms = [];
+
+  rooms.push(thread);
+
+  others.forEach( (other) => {
+
+    var roomName = null;
+
+    if(other < user) {
+      roomName = `${thread}.${other}.${user}`;
+    }
+    else if (other === user){
+      alert('Fuck me.');
+    }
+    else{
+      roomName = `${thread}.${user}.${other}`;
+    }
+
+    rooms.push(roomName);
+    threads.push({name: roomName});ss
+
+  });
+
+  socket.emit('registerRooms', {
+    rooms: rooms,
+    currentRoom: currentRoom
+  });
 });
 
 socket.on('messages', (data) => {
@@ -26,8 +55,27 @@ function renderMessages(messages){
     p.innerHTML = message.senderId + ': ' + message.content;
     container.appendChild(p);
   });
+
+  // set scroll
+  container.scrollTop = container.scrollHeight;
 }
 
+function changeThread(e) {
+
+  // update current user
+  var newRoom = e.target.id;
+  if(newRoom === 'testUser1'){
+    newRoom = `${thread}.${user}.testUser1`;
+  }
+  else if (newRoom === 'testUser2'){
+    newRoom = `${thread}.${user}.testUser2`;
+  }
+  currentRoom = newRoom;
+  console.log(currentRoom);
+
+  // rerender messages
+  socket.emit('changeRoom', { currentRoom: currentRoom});
+}
 
 function sendMessage(threadId, senderId, content) {
   socket.emit('newMessage', {
@@ -46,3 +94,8 @@ function sendMessageHelper () {
 }
 
 document.getElementById('send').addEventListener('click',sendMessageHelper);
+
+var threads = document.getElementsByClassName('thread');
+for(var i = 0; i < threads.length; i++){
+  threads[i].addEventListener('click', changeThread);
+}

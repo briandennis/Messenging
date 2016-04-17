@@ -49,6 +49,32 @@ const Thread = mongoose.model('Thread', threadSchema);
 // emit hello world event
 io.on('connection', (socket) => {
 
+  // request socket room registration
+  socket.emit('getRooms');
+
+  // handle room response
+  socket.on('registerRooms', (data) => {
+    data.rooms.forEach((room) => {
+      socket.join(room);
+      console.log(`User joined room ${room}`);
+    });
+
+    // get thread and send messages
+    Thread.findOne({threadId: data.currentRoom}, (err, thread) => {
+      if (err){
+        console.log('Thread error!');
+        return;
+      }
+      console.log('Thread found: ' + thread.toString());
+
+      io.to(data.currentRoom).emit('messages', { messages: thread.messages });
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user has disconnected...');
+  });
+
   // handle new sent message
   socket.on('newMessage', (data) => {
 
