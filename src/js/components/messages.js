@@ -1,25 +1,42 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import GenerateSession from 'session';
+const socket = io('http://localhost:3000');
 
 class Messenger extends React.Component {
 
-  constructor(){
+  constructor(props){
 
     // required
-    super();
-    this.Session = SessionFunc();
+    super(props);
 
-
-
+    this.props.Session = {
+      project: {
+        id: 'testProject',
+        projectName: 'Time Machine'
+      },
+      users: [
+        { id: 'testUser0', firstName: 'Brian', lastName: 'Dennis'},
+        { id: 'testUser1', firstName: 'Jake', lastName: 'Dex'},
+        { id: 'testUser2', firstName: 'Elon', lastName: 'Musk'},
+        { id: 'testUser3', firstName: 'Albert', lastName: 'Einstein'},
+      ]
+    }
   }
 
   render(){
-    console.log(this.Session.toString());
-    return <div id='messengerContainer'>
-
-           </div>;
+    return (
+      <div id='messengerContainer'>
+        <div id='titleContainer'>
+          <h1>{this.props.thread}</h1>
+        </div>
+        <div>
+          {this.props.Session.users.forEach( (user) => {
+            return `${user.firstName} ${user.lastName}`;
+          })}
+        </div>
+      </div>
+    );
   }
 }
 
-ReactDOM.render(<Messenger />, document.getElementById('app'));
+ReactDOM.render(<Messenger thread={'testThread'} />, document.getElementById('app'));

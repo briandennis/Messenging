@@ -55,19 +55,20 @@ io.on('connection', (socket) => {
   // handle room response
   socket.on('registerRooms', (data) => {
     data.rooms.forEach((room) => {
+      console.log('Trying to join room ' + room);
       socket.join(room);
       console.log(`User joined room ${room}`);
-    });
 
-    // get thread and send messages
-    Thread.findOne({threadId: data.currentRoom}, (err, thread) => {
-      if (err){
-        console.log('Thread error!');
-        return;
-      }
-      console.log('Thread found: ' + thread.toString());
+      // get thread and send messages
+      Thread.findOne({threadId: room}, (err, thread) => {
+        if (err){
+          console.log('Thread error!');
+          return;
+        }
+        console.log('Thread found: ' + thread.threadId);
 
-      io.to(data.currentRoom).emit('messages', { messages: thread.messages });
+        io.to(data.currentRoom).emit('messages', { threadId: thread.threadId, messages: thread.messages });
+      });
     });
   });
 
@@ -86,20 +87,25 @@ io.on('connection', (socket) => {
     });
 
     // get thread and add message to it
-    Thread.findOne({threadId: 'testThread'}, (err, thread) => {
+    Thread.findOne({threadId: data.threadId}, (err, thread) => {
       if (err){
         console.log('Thread error!');
         return;
       }
-      console.log('Thread found: ' + thread.toString());
 
       // add message to thread
       thread.messages.push(newMessage);
 
       // save thread
       thread.save( (err, thread) => {
-        console.log('Got to save thread!');
-        socket.emit('messages', {messages: thread.messages});
+
+        if(err){
+          console.log('Error saving message!');
+          return false;
+        }
+
+        console.log('Saved message...');
+        socket.emit('messages', { threadId: thread.threadId, messages: thread.messages });
       });
     });
   });

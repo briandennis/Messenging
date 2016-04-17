@@ -1,58 +1,84 @@
 const socket = io('http://localhost:3000');
+const Session = genSession();
 
-// create dummy session info
-const thread = 'testThread';
-const user = 'testUser';
-const others = ['testUser1', 'testUser2', 'testUser3', 'testUser4'];
-var currentRoom = thread;
-var chatThreads = [];
+// setup session info
+const project = Session.project.id;
+const user = Session.currentUserId;
+const users = Session.users;
+
+//initialize threads
+let currentThread = project;
+const threads = generateThreads(project, users, user);
+
+//initialize message map
+const messageMap = new Map();
+
+threads.forEach( (thread) => {
+  messageMap.set(thread, []);
+});
+
 
 socket.on('getRooms', () => {
 
-  // calculate rooms
-  var rooms = [];
-
-  rooms.push(thread);
-
-  others.forEach( (other) => {
-
-    var roomName = null;
-
-    if(other < user) {
-      roomName = `${thread}.${other}.${user}`;
-    }
-    else if (other === user){
-      alert('Fuck me.');
-    }
-    else{
-      roomName = `${thread}.${user}.${other}`;
-    }
-
-    rooms.push(roomName);
-    chatThreads.push({name: roomName});
-
-  });
-
   socket.emit('registerRooms', {
-    rooms: rooms,
-    currentRoom: currentRoom
+    rooms: threads,
+    currentRoom: currentThread
   });
 });
 
 socket.on('messages', (data) => {
-  let messages = data.messages;
+  messageMap.set(data.threadId, data.messages);
+  renderMessages(messageMap.get(currentThread));
+});
+
+function generateThreads( project, users, user){
+
+  const threads = [];
+
+  threads.push(project);
+
+  users.forEach( (currUser) => {
+    if(currUser.id === user) return;
+
+    let thread = null;
+
+    if(currUser.id < user) {
+      thread = `${project}.${currUser.id}.${user}`;
+    }
+    else if (currUser.id === user){
+      alert('Fuck me.');
+    }
+    else{
+      thread = `${project}.${user}.${currUser.id}`;
+    }
+
+    threads.push(thread)
+
+  });
+
+  return threads;
+}
+
+function renderMessages(messages){
+
   messages.sort( (a,b) => {
     return a - b;
   });
-  renderMessages(messages);
-});
 
-function renderMessages(messages){
   var container = document.getElementById('messages');
   container.innerHTML = '';
   messages.forEach( (message) => {
+
+    var currUser = users.filter( (currUser) => {
+      console.log('User ids: ' + currUser.id + ' ' + message.senderId);
+      if(currUser.id === message.senderId){
+        return true;
+      }
+      return false;
+    })[0];
+
     var p = document.createElement('p');
-    p.innerHTML = message.senderId + ': ' + message.content;
+    p.innerHTML = `${currUser.firstName} ${currUser.lastName}: ${message.content}`;
     container.appendChild(p);
   });
 
@@ -63,18 +89,13 @@ function renderMessages(messages){
 function changeThread(e) {
 
   // update current user
-  var newRoom = e.target.id;
-  if(newRoom === 'testUser1'){
-    newRoom = `${thread}.${user}.testUser1`;
-  }
-  else if (newRoom === 'testUser2'){
-    newRoom = `${thread}.${user}.testUser2`;
-  }
-  currentRoom = newRoom;
-  console.log(currentRoom);
+  var newThread = e.target.id;
+  currentThread = newThread;
+
+  console.log('Current thread now ' + currentThread);
 
   // rerender messages
-  socket.emit('changeRoom', { currentRoom: currentRoom});
+  renderMessages(messageMap.get(currentThread));
 }
 
 function sendMessage(threadId, senderId, content) {
@@ -90,12 +111,12 @@ function sendMessage(threadId, senderId, content) {
 function sendMessageHelper () {
   console.log('entering right thing...');
   var message = document.getElementById('messageBox').value;
-  sendMessage(thread, user, message);
+  sendMessage(currentThread, user, message);
 }
 
 document.getElementById('send').addEventListener('click',sendMessageHelper);
 
-var threads = document.getElementsByClassName('thread');
-for(var i = 0; i < threads.length; i++){
-  threads[i].addEventListener('click', changeThread);
+var threadElements = document.getElementsByClassName('thread');
+for(var i = 0; i < threadElements.length; i++){
+  threadElements[i].addEventListener('click', changeThread);
 }
